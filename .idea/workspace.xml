@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="066bd402-2490-4539-98e3-7df82a1a890e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/testControllers.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config/keys_dev.js" beforeDir="false" afterPath="$PROJECT_DIR$/config/keys_dev.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/models/singleProject.js" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/seeds.js" beforeDir="false" afterPath="$PROJECT_DIR$/seeds.js" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -69,7 +69,7 @@
       <updated>1565885300949</updated>
       <workItem from="1565885302048" duration="1443000" />
       <workItem from="1566203898040" duration="628000" />
-      <workItem from="1566218980141" duration="3149000" />
+      <workItem from="1566218980141" duration="8132000" />
     </task>
     <servers />
   </component>

@@ -4,8 +4,11 @@ const express = require('express'),
 	app = express(),
 	methodOverride = require('method-override'),
 	port = process.env.PORT || 5010,
-	keys = require('./config/keys')
-	seeds = require('./seeds')
+	keys = require('./config/keys'),
+	seeds = require('./seeds'),
+	testControllers = require('./testControllers'),
+	Project = require('./models/Project')
+
 
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({extended: true}))
@@ -21,6 +24,18 @@ mongoose
 	.catch(err => console.log('error connecting to MongoDB\n', err))
 
 seeds()
+testControllers()
+
+app.get('/related',(req,res)=>{
+	Project.find({})
+		.then(projects=>{
+			let result = projects.filter(project=>{
+				return project.addressGenerated === projects[12].addressGenerated
+			})
+			res.send(result)
+		})
+
+})
 
 app.listen(port, function() {
 	console.log('server up and running on port', port)
