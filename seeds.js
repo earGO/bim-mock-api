@@ -183,7 +183,17 @@ function generateTabs(){
 					new Tab(newTab)
 						.save()
 						.then(tab=>{
+							for(let i=0;i<generateRandom(1,16);i++){
+								const newSection = {
+									name : 'Section '+ i +' for tab ' + tab.name,
+									tabId:tab._id
+								}
+								new Section(newSection)
+									.save()
+									.then(section=>{
 
+									})
+							}
 						})
 				})
 			})
@@ -203,8 +213,6 @@ function generateSections(){
 						.save()
 				}
 			})
-
-
 		})
 }
 
