@@ -124,6 +124,7 @@ function generateProjects(objects,stages){
 		new Project(newProject)
 			.save()
 			.then(project=>{
+				generateTabs(project)
 				if(object%2===0){
 					const newProject = {
 						stage:stages[1],
@@ -136,6 +137,7 @@ function generateProjects(objects,stages){
 					new Project(newProject)
 						.save()
 						.then(project=>{
+							generateTabs(project)
 							if(object%6===0){
 								const newProject = {
 									stage:stages[2],
@@ -148,6 +150,7 @@ function generateProjects(objects,stages){
 								new Project(newProject)
 									.save()
 									.then(project=>{
+										generateTabs(project)
 										if(object%12===0){
 											const newProject = {
 												stage:stages[3],
@@ -161,6 +164,7 @@ function generateProjects(objects,stages){
 												.save()
 												.then(project=>{
 													console.log('done generating projects on all stages, they look like this:\n',project)
+													generateTabs(project)
 												})
 										}
 									})
@@ -171,10 +175,7 @@ function generateProjects(objects,stages){
 	}
 }
 
-function generateTabs(){
-	Project.find({})
-		.then(projects=>{
-			projects.map(project=>{
+function generateTabs(project){
 				tabsHashTable[project.stage].map(tab=>{
 					const newTab = {
 						name:tab,
@@ -183,27 +184,12 @@ function generateTabs(){
 					new Tab(newTab)
 						.save()
 						.then(tab=>{
-							for(let i=0;i<generateRandom(1,16);i++){
-								const newSection = {
-									name : 'Section '+ i +' for tab ' + tab.name,
-									tabId:tab._id
-								}
-								new Section(newSection)
-									.save()
-									.then(section=>{
-
-									})
-							}
+							generateSections(tab)
 						})
 				})
-			})
-		})
 }
 
-function generateSections(){
-	Tab.find({})
-		.then(tabs=>{
-			tabs.map(tab=>{
+function generateSections(tab){
 				for(let i=0;i<generateRandom(1,16);i++){
 					const newSection = {
 						name : 'Section '+ i +' for tab ' + tab.name,
@@ -212,15 +198,13 @@ function generateSections(){
 					new Section(newSection)
 						.save()
 				}
-			})
-		})
 }
 
 const topFunc = ()=>{
 	clearAll()
 	setTimeout(()=>{generateProjects(objects,stages,streets, cities)},5000)
-	setTimeout(()=>{generateTabs()},13000)
-	setTimeout(()=>{generateSections()},18000)
+	// setTimeout(()=>{generateTabs()},13000)
+	// setTimeout(()=>{generateSections()},18000)
 }
 
 module.exports = topFunc
