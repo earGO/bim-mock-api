@@ -5,6 +5,7 @@ const express = require('express'),
 	methodOverride = require('method-override'),
 	port = process.env.PORT || 5010,
 	keys = require('./config/keys')
+	seeds = require('./seeds')
 
 app.use(express.static('public'))
 app.use(bodyParser.urlencoded({extended: true}))
@@ -18,6 +19,8 @@ mongoose
 	.connect(mongoDB, {useNewUrlParser: true})
 	.then(() => console.log('MongoDB connected!'))
 	.catch(err => console.log('error connecting to MongoDB\n', err))
+
+seeds()
 
 app.listen(port, function() {
 	console.log('server up and running on port', port)
