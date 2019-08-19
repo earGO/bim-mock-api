@@ -32,7 +32,13 @@ app.get('/related',(req,res)=>{
 			let result = projects.filter(project=>{
 				return project.addressGenerated === projects[12].addressGenerated
 			})
-			res.send(result)
+			let related=result.map(project=>{
+				return {
+					id:project._id,
+					stage:project.stage
+				}
+			})
+			res.send(related)
 		})
 
 })

@@ -6,12 +6,7 @@ ProjectSchema = new mongoose.Schema({
     dateChange:Date,
     dateClosingStage:Date,
     objectName:String,
-    addressGenerated:String,
-    relatedProjects: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Projects'
-    }],
-
+    addressGenerated:String
 })
 
 module.exports = mongoose.model('Projects', ProjectSchema, 'Projects')

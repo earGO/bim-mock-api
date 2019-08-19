@@ -1,4 +1,6 @@
 const Project = require('./models/Project')
+const Tab = require('./models/Tab')
+const Section = require('./models/Section')
 
 const streets = [
 	'Ленина',
@@ -50,6 +52,39 @@ const stages=[
 	'Снос',
 ]
 
+const tabsHashTable = {
+	ОБИН:[
+		'Реквизиты',
+		'Общие исходные данные',
+		'Результаты инженерных изысканий',
+		'Принципиальные решения',
+		'Реестр договоров',
+		'Информация о закупках',
+	],
+	Проектирование:[
+		'Реквизиты',
+		'Исходные данные',
+		'Результаты инженерных изысканий',
+		'Проектные решения',
+		'Реестр договоров',
+		'Информация о закупках',
+	],
+	Строительство:[
+		'Реквизиты',
+		'Исходные данные',
+		'Проектные решения',
+		'Исполнительная документация',
+		'Акты приёмки',
+		'Реестр договоров',
+		'Информация о закупках',
+	],
+	Эксплуатация:[
+		'Реквизиты',
+		'Реестр договоров',
+		'Информация о закупках',
+	],
+}
+
 
 const generateRandom=(min,max)=>{
 	return Math.floor(Math.random() * (max - min)) + min;
@@ -67,8 +102,10 @@ function generateAddresses(objects,streets,cities){
 	return result
 }
 
-function clearAllProjects(){
+function clearAll(){
 	Project.deleteMany({},()=>{console.log('deleted all Projects')})
+	Tab.deleteMany({},()=>{console.log('deleted all tabs')})
+	Section.deleteMany({},()=>{console.log('deleted all sections')})
 }
 
 const objectAddresses = generateAddresses(objects,streets,cities)
@@ -87,77 +124,95 @@ function generateProjects(objects,stages){
 		new Project(newProject)
 			.save()
 			.then(project=>{
-				console.log(project.objectName)
+				if(object%2===0){
+					const newProject = {
+						stage:stages[1],
+						dateCreated:new Date(),
+						dateChange:new Date(),
+						dateClosingStage:null,
+						objectName:objects[object],
+						addressGenerated:objectAddresses[object],
+					}
+					new Project(newProject)
+						.save()
+						.then(project=>{
+							if(object%6===0){
+								const newProject = {
+									stage:stages[2],
+									dateCreated:new Date(),
+									dateChange:new Date(),
+									dateClosingStage:null,
+									objectName:objects[object],
+									addressGenerated:objectAddresses[object],
+								}
+								new Project(newProject)
+									.save()
+									.then(project=>{
+										if(object%12===0){
+											const newProject = {
+												stage:stages[3],
+												dateCreated:new Date(),
+												dateChange:new Date(),
+												dateClosingStage:null,
+												objectName:objects[object],
+												addressGenerated:objectAddresses[object],
+											}
+											new Project(newProject)
+												.save()
+												.then(project=>{
+													console.log('done generating projects on all stages, they look like this:\n',project)
+												})
+										}
+									})
+							}
+						})
+				}
 			})
 	}
 }
 
-function generateDesignProjects(objects,stages){
-	for (let object in objects){
-		if(object%2===0){
-			const newProject = {
-				stage:stages[1],
-				dateCreated:new Date(),
-				dateChange:new Date(),
-				dateClosingStage:null,
-				objectName:objects[object],
-				addressGenerated:objectAddresses[object],
-			}
-			new Project(newProject)
-				.save()
-				.then(project=>{
-					console.log(project.addressGenerated)
+function generateTabs(){
+	Project.find({})
+		.then(projects=>{
+			projects.map(project=>{
+				tabsHashTable[project.stage].map(tab=>{
+					const newTab = {
+						name:tab,
+						projectId:project._id
+					}
+					new Tab(newTab)
+						.save()
+						.then(tab=>{
+
+						})
 				})
-		}
-	}
+			})
+		})
 }
 
-function generateConstructionProjects(objects,stages){
-	for (let object in objects){
-		if(object%6===0){
-			const newProject = {
-				stage:stages[2],
-				dateCreated:new Date(),
-				dateChange:new Date(),
-				dateClosingStage:null,
-				objectName:objects[object],
-				addressGenerated:objectAddresses[object],
-			}
-			new Project(newProject)
-				.save()
-				.then(project=>{
-					console.log(project.addressGenerated)
-				})
-		}
-	}
-}
+function generateSections(){
+	Tab.find({})
+		.then(tabs=>{
+			tabs.map(tab=>{
+				for(let i=0;i<generateRandom(1,16);i++){
+					const newSection = {
+						name : 'Section '+ i +' for tab ' + tab.name,
+						tabId:tab._id
+					}
+					new Section(newSection)
+						.save()
+				}
+			})
 
-function generateExpluatationProjects(objects,stages){
-	for (let object in objects){
-		if(object%12===0){
-			const newProject = {
-				stage:stages[3],
-				dateCreated:new Date(),
-				dateChange:new Date(),
-				dateClosingStage:null,
-				objectName:objects[object],
-				addressGenerated:objectAddresses[object],
-			}
-			new Project(newProject)
-				.save()
-				.then(project=>{
-					console.log(project.addressGenerated)
-				})
-		}
-	}
+
+		})
 }
 
 const topFunc = ()=>{
-	 clearAllProjects()
-	 generateProjects(objects,stages,streets, cities)
-	 generateDesignProjects(objects,stages)
-	 generateConstructionProjects(objects,stages)
-	 generateExpluatationProjects(objects,stages)
+	clearAll()
+	setTimeout(()=>{generateProjects(objects,stages,streets, cities)},5000)
+	setTimeout(()=>{generateTabs()},13000)
+	setTimeout(()=>{generateSections()},18000)
 }
 
 module.exports = topFunc
