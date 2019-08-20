@@ -1,6 +1,8 @@
 const Project = require('./models/Project')
 const Tab = require('./models/Tab')
 const Section = require('./models/Section')
+const Group = require('./models/Group')
+const Field = require('./models/Field')
 
 const streets = [
 	'Ленина',
@@ -52,6 +54,12 @@ const stages=[
 	'Снос',
 ]
 
+const types=[
+	'input',
+	'select',
+	'file'
+]
+
 const tabsHashTable = {
 	ОБИН:[
 		'Реквизиты',
@@ -85,10 +93,19 @@ const tabsHashTable = {
 	],
 }
 
-
 const generateRandom=(min,max)=>{
 	return Math.floor(Math.random() * (max - min)) + min;
 }
+
+const generateRandomBoolean=()=>{
+	const decider = Math.floor(Math.random() * (1 - 2));
+	return decider>0
+}
+
+const generateRandomItem=(arrayOfItems)=>{
+	return arrayOfItems[Math.floor(Math.random()*arrayOfItems.length)];
+}
+
 
 function generateAdress(streets,cities) {
 	return (cities[generateRandom(0,cities.length)] + ', ' + streets[generateRandom(0,streets.length)] + ', ' + generateRandom(1,81))
@@ -106,6 +123,8 @@ function clearAll(){
 	Project.deleteMany({},()=>{console.log('deleted all Projects')})
 	Tab.deleteMany({},()=>{console.log('deleted all tabs')})
 	Section.deleteMany({},()=>{console.log('deleted all sections')})
+	Group.deleteMany({},()=>{console.log('deleted all groups')})
+	Field.deleteMany({},()=>{console.log('deleted all fields')})
 }
 
 const objectAddresses = generateAddresses(objects,streets,cities)
@@ -113,12 +132,17 @@ console.log(objects.length)
 
 function generateProjects(objects,stages){
 	for (let object in objects){
+		const progressAll = generateRandom(6,9)
+		const progressCurrent = generateRandom(0,progressAll)
 		let newProject = {
 			stage:stages[0],
 			dateCreated:new Date(),
 			dateChange:new Date(),
 			dateClosingStage:null,
 			objectName:objects[object],
+			objectNumber:generateRandom(12,1488).toString()+'/'+generateRandom(1,69).toString(),
+			type:'BIM-проект',
+			progress:progressCurrent+'/'+progressAll,
 			addressGenerated:objectAddresses[object],
 		}
 		new Project(newProject)
@@ -126,12 +150,17 @@ function generateProjects(objects,stages){
 			.then(project=>{
 				generateTabs(project)
 				if(object%2===0){
+					const progressAll = generateRandom(6,9)
+					const progressCurrent = generateRandom(0,progressAll)
 					const newProject = {
 						stage:stages[1],
 						dateCreated:new Date(),
 						dateChange:new Date(),
 						dateClosingStage:null,
 						objectName:objects[object],
+						objectNumber:generateRandom(12,1488).toString()+'/'+generateRandom(1,69).toString(),
+						type:'BIM-проект',
+						progress:progressCurrent+'/'+progressAll,
 						addressGenerated:objectAddresses[object],
 					}
 					new Project(newProject)
@@ -139,12 +168,17 @@ function generateProjects(objects,stages){
 						.then(project=>{
 							generateTabs(project)
 							if(object%6===0){
+								const progressAll = generateRandom(6,9)
+								const progressCurrent = generateRandom(0,progressAll)
 								const newProject = {
 									stage:stages[2],
 									dateCreated:new Date(),
 									dateChange:new Date(),
 									dateClosingStage:null,
 									objectName:objects[object],
+									objectNumber:generateRandom(12,1488).toString()+'/'+generateRandom(1,69).toString(),
+									type:'BIM-проект',
+									progress:progressCurrent+'/'+progressAll,
 									addressGenerated:objectAddresses[object],
 								}
 								new Project(newProject)
@@ -152,18 +186,23 @@ function generateProjects(objects,stages){
 									.then(project=>{
 										generateTabs(project)
 										if(object%12===0){
+
+											const progressAll = generateRandom(6,9)
+											const progressCurrent = generateRandom(0,progressAll)
 											const newProject = {
 												stage:stages[3],
 												dateCreated:new Date(),
 												dateChange:new Date(),
 												dateClosingStage:null,
 												objectName:objects[object],
+												objectNumber:generateRandom(12,1488).toString()+'/'+generateRandom(1,69).toString(),
+												type:'BIM-проект',
+												progress:progressCurrent+'/'+progressAll,
 												addressGenerated:objectAddresses[object],
 											}
 											new Project(newProject)
 												.save()
 												.then(project=>{
-													console.log('done generating projects on all stages, they look like this:\n',project)
 													generateTabs(project)
 												})
 										}
@@ -189,7 +228,7 @@ function generateTabs(project){
 				})
 }
 
-function generateSections(tab){
+const generateSections = (tab)=>{
 				for(let i=0;i<generateRandom(1,16);i++){
 					const newSection = {
 						name : 'Section '+ i +' for tab ' + tab.name,
@@ -197,14 +236,48 @@ function generateSections(tab){
 					}
 					new Section(newSection)
 						.save()
+						.then(section=>{
+							generateGroups(section)
+						})
 				}
 }
 
-const topFunc = ()=>{
-	clearAll()
-	setTimeout(()=>{generateProjects(objects,stages,streets, cities)},5000)
-	// setTimeout(()=>{generateTabs()},13000)
-	// setTimeout(()=>{generateSections()},18000)
+function generateGroups(section){
+	for(let i=0;i<generateRandom(1,7);i++){
+		const newGroup = {
+			name : 'Group '+ i +' for section ' + section.name,
+			sectionId:section._id,
+			sort:i,
+			userElement:generateRandomBoolean()
+		}
+		new Group(newGroup)
+			.save()
+			.then(group=>{
+				generateFields(group)
+			})
+	}
 }
 
-module.exports = topFunc
+function generateFields(group){
+	for(let i=0;i<generateRandom(1,7);i++){
+		const newField = {
+			name : 'Field '+ i +' for group ' + group.name,
+			value : 'Field value'+ i +' for group ' + group.name,
+			groupId:group._id,
+			sort:i,
+			userElement:generateRandomBoolean(),
+			type:generateRandomItem(types),
+		}
+		new Field(newField)
+			.save()
+	}
+}
+
+
+const topFunc = ()=>{
+	clearAll()
+	setTimeout(()=>{generateProjects(objects,stages,streets, cities)},7000)
+
+}
+
+module.exports = {topFunc,stages,objects}

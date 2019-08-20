@@ -2,8 +2,9 @@ const mongoose = require('mongoose')
 
 GroupSchema = new mongoose.Schema({
     name:String,
-    tabId:mongoose.Schema.Types.ObjectId,
-
+    sectionId:mongoose.Schema.Types.ObjectId,
+    sort:Number,
+    userElement:Boolean
 })
 
 module.exports = mongoose.model('Groups', GroupSchema, 'Groups')
