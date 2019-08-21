@@ -6,7 +6,11 @@ const express = require('express'),
 	port = process.env.PORT || 5010,
 	keys = require('./config/keys'),
 	seeds = require('./seeds'),
-	Project = require('./models/Project')
+	Project = require('./models/Project'),
+	Tab = require('./models/Tab'),
+	Section = require('./models/Section'),
+	Group = require('./models/Group'),
+	Field = require('./models/Field')
 
 
 app.use(express.static('public'))
@@ -55,27 +59,43 @@ app.post('/projects/search',(req,res)=>{
 app.get('/projects/',(req,res)=>{
 	Project.find({})
 		.then(projects=>{
-
 			//send this array
 			res.send(projects.slice(0,5))
 		})
 })
 
-app.get('/related',(req,res)=>{
-	Project.find({})
-		.then(projects=>{
-			let result = projects.filter(project=>{
-				return project.addressGenerated === projects[12].addressGenerated
-			})
-			let related=result.map(project=>{
-				return {
-					id:project._id,
-					stage:project.stage
-				}
-			})
-			res.send(related)
+app.get('/related/:id',(req,res)=>{
+	const objectId = req.params.id
+	Project.findOne({_id:objectId})
+		.then(project=>{
+			const nameToRelate = project.objectName;
+			Project.find({objectName:nameToRelate})
+				.then(projects=>{
+					let related=projects.map(project=>{
+						return {
+							id:project._id,
+							stage:project.stage
+						}
+					})
+					res.send(related)
+				})
 		})
+})
 
+app.get('/projects/:id',(req,res)=>{
+	const projectid = req.params.id
+	Project.find({_id:projectid})
+		.then(project=>{
+			res.send(project)
+		})
+})
+
+app.get('/tabs/:id',(req,res)=>{
+	const projectid = req.params.id
+	Tab.find({projectId:projectid})
+		.then(tabs=>{
+			res.send(tabs)
+		})
 })
 
 app.listen(port, function() {

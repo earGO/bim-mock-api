@@ -6,7 +6,7 @@ ProjectSchema = new mongoose.Schema({
     dateChange:Date,
     dateClosingStage:Date,
     objectName:String,
-    objectNumber:String,
+    objectNum:String,
     type:String,
     progress:String,
     addressGenerated:String
