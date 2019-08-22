@@ -33,7 +33,6 @@ mongoose
 
 // seeds.topFunc()
 
-
 /** An emulation for '/ws-pm/v1/projects/search' endpoint, that returns all projects*/
 app.post('/projects/search',(req,res)=>{
 	Project.find({})
@@ -121,11 +120,15 @@ app.get('/group/:id',async (req,res)=>{
 	const groupFields = await getResult(groups)
 	const result = groups.map((group,index)=>{
 		let interim = {}
-		interim.name=group.name
+		interim.id=group._id
+		interim.name = group.name
+		interim.userElement = group.userElement
+		interim.sort = group.sort
 		interim.fields = groupFields[index]
+		console.log(group.userElement)
 		return interim
+
 	})
-	console.log(result)
 	res.send(result)
 })
 

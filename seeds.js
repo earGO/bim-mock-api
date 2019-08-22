@@ -98,8 +98,8 @@ const generateRandom=(min,max)=>{
 }
 
 const generateRandomBoolean=()=>{
-	const decider = Math.floor(Math.random() * (1 - 2));
-	return decider>0
+
+	return Math.random()<0.55
 }
 
 const generateRandomItem=(arrayOfItems)=>{
