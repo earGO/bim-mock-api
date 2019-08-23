@@ -9,7 +9,8 @@ ProjectSchema = new mongoose.Schema({
     objectNum:String,
     type:String,
     progress:String,
-    addressGenerated:String
+    addressGenerated:String,
+    versions:[Number]
 })
 
 module.exports = mongoose.model('Projects', ProjectSchema, 'Projects')

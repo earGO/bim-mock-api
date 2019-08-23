@@ -98,8 +98,16 @@ const generateRandom=(min,max)=>{
 }
 
 const generateRandomBoolean=()=>{
-
 	return Math.random()<0.55
+}
+
+/** Generates an array of numbers from 1 and up to size set */
+function generateArrayOfRandomNumbers(size){
+	let result=[]
+	for (let i=1;i<=size;i++){
+		result.push(i)
+	}
+	return result
 }
 
 const generateRandomItem=(arrayOfItems)=>{
@@ -140,6 +148,7 @@ function generateProjects(objects,stages){
 			dateChange:new Date(),
 			dateClosingStage:null,
 			objectName:objects[object],
+			versions:generateArrayOfRandomNumbers(generateRandom(1,4)),
 			objectNum:generateRandom(12,1488).toString()+'/'+generateRandom(1,69).toString(),
 			type:'BIM-проект',
 			progress:progressCurrent+'/'+progressAll,
@@ -158,6 +167,7 @@ function generateProjects(objects,stages){
 						dateChange:new Date(),
 						dateClosingStage:null,
 						objectName:objects[object],
+						versions:[1],
 						objectNum:generateRandom(12,1488).toString()+'/'+generateRandom(1,69).toString(),
 						type:'BIM-проект',
 						progress:progressCurrent+'/'+progressAll,
@@ -176,6 +186,7 @@ function generateProjects(objects,stages){
 									dateChange:new Date(),
 									dateClosingStage:null,
 									objectName:objects[object],
+									versions:[1],
 									objectNum:generateRandom(12,1488).toString()+'/'+generateRandom(1,69).toString(),
 									type:'BIM-проект',
 									progress:progressCurrent+'/'+progressAll,
@@ -186,7 +197,6 @@ function generateProjects(objects,stages){
 									.then(project=>{
 										generateTabs(project)
 										if(object%12===0){
-
 											const progressAll = generateRandom(6,9)
 											const progressCurrent = generateRandom(0,progressAll)
 											const newProject = {
@@ -195,6 +205,7 @@ function generateProjects(objects,stages){
 												dateChange:new Date(),
 												dateClosingStage:null,
 												objectName:objects[object],
+												versions:[1],
 												objectNum:generateRandom(12,1488).toString()+'/'+generateRandom(1,69).toString(),
 												type:'BIM-проект',
 												progress:progressCurrent+'/'+progressAll,
@@ -223,12 +234,12 @@ function generateTabs(project){
 					new Tab(newTab)
 						.save()
 						.then(tab=>{
-							generateSections(tab)
+							generateSections(tab,project.versions)
 						})
 				})
 }
 
-const generateSections = (tab)=>{
+const generateSections = (tab,versions)=>{
 				for(let i=0;i<generateRandom(1,16);i++){
 					const newSection = {
 						name : 'Section '+ i +' for tab ' + tab.name,
@@ -237,25 +248,29 @@ const generateSections = (tab)=>{
 					new Section(newSection)
 						.save()
 						.then(section=>{
-							generateGroups(section)
+							generateGroups(section,versions)
 						})
 				}
 }
 
-function generateGroups(section){
-	for(let i=0;i<generateRandom(1,7);i++){
-		const newGroup = {
-			name : 'Group '+ i +' for section ' + section.name,
-			sectionId:section._id,
-			sort:i,
-			userElement:generateRandomBoolean()
+function generateGroups(section,versions){
+	versions.map(version=>{
+		for(let i=0;i<generateRandom(1,7);i++){
+			const newGroup = {
+				name : 'Group '+ i +' for section ' + section.name + ' version ' +version,
+				sectionId:section._id,
+				sort:i,
+				userElement:generateRandomBoolean(),
+				version:version
+			}
+			new Group(newGroup)
+				.save()
+				.then(group=>{
+					generateFields(group)
+				})
 		}
-		new Group(newGroup)
-			.save()
-			.then(group=>{
-				generateFields(group)
-			})
-	}
+	})
+
 }
 
 function generateFields(group){

@@ -14,13 +14,14 @@ const express = require('express'),
 
 
 app.use(express.static('public'))
-app.use(bodyParser.urlencoded({extended: true}))
+app.use(bodyParser.text())
 app.use(methodOverride('_method'))
 app.use(function(req, res, next) {
 	res.header("Access-Control-Allow-Origin", "*");
 	res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
 	next();
 });
+
 
 const mongoDB = keys.MONGODB_URI
 
@@ -39,7 +40,6 @@ app.post('/projects/search',(req,res)=>{
 		.then(projects=>{
 			let intermediate = []
 			seeds.objects.map(object=>{
-				console.log(object)
 				let insideIntermediate=[]
 				//make an array of all projects according to it's objectName
 				projects.map(project=>{
@@ -104,12 +104,21 @@ app.get('/section/:id',(req,res)=>{
 			res.send(sections.sort())
 		})
 })
-app.get('/group/:id',async (req,res)=>{
+app.post('/group/:id',async (req,res)=>{
 	const sectionId = req.params.id
+	const groupVersion = JSON.parse(req.body).version
+	console.log(groupVersion)
 	const groups = await Group.find({sectionId:sectionId}).exec()
 	groups.sort((a,b)=>{
 		return a.sort-b.sort
 	})
+	let  workGroups = []
+	groups.map(group=>{
+		if (group.version === groupVersion){
+			workGroups.push( group)
+		}
+	})
+	console.log(workGroups)
 	const getResult = async groups =>{
 		const promises = groups.map(group=>{
 			return Field.find({groupId:group._id}).exec()
@@ -117,15 +126,14 @@ app.get('/group/:id',async (req,res)=>{
 		const result = await Promise.all(promises)
 		return result
 	}
-	const groupFields = await getResult(groups)
-	const result = groups.map((group,index)=>{
+	const groupFields = await getResult(workGroups)
+	const result = workGroups.map((group,index)=>{
 		let interim = {}
 		interim.id=group._id
 		interim.name = group.name
 		interim.userElement = group.userElement
 		interim.sort = group.sort
 		interim.fields = groupFields[index]
-		console.log(group.userElement)
 		return interim
 
 	})

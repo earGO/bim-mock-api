@@ -4,7 +4,8 @@ GroupSchema = new mongoose.Schema({
     name:String,
     sectionId:mongoose.Schema.Types.ObjectId,
     sort:Number,
-    userElement:Boolean
+    userElement:Boolean,
+    version:Number
 })
 
 module.exports = mongoose.model('Groups', GroupSchema, 'Groups')
