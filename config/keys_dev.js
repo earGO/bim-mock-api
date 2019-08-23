@@ -1,4 +1,4 @@
 module.exports = {
 	/*======================MongoDB credent========================*/
-	MONGODB_URI: 'mongodb://localhost/cookbook-dev-local'
+	MONGODB_URI: 'mongodb://localhost/bim-dev-local'
 }
