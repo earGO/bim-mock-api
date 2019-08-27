@@ -107,7 +107,6 @@ app.get('/section/:id',(req,res)=>{
 app.post('/group/:id',async (req,res)=>{
 	const sectionId = req.params.id
 	const groupVersion = JSON.parse(req.body).version
-	console.log(groupVersion)
 	const groups = await Group.find({sectionId:sectionId}).exec()
 	groups.sort((a,b)=>{
 		return a.sort-b.sort
@@ -118,7 +117,6 @@ app.post('/group/:id',async (req,res)=>{
 			workGroups.push( group)
 		}
 	})
-	console.log(workGroups)
 	const getResult = async groups =>{
 		const promises = groups.map(group=>{
 			return Field.find({groupId:group._id}).exec()
@@ -139,7 +137,6 @@ app.post('/group/:id',async (req,res)=>{
 	})
 	res.send(result)
 })
-
 
 app.listen(port, function() {
 	console.log('server up and running on port', port)
